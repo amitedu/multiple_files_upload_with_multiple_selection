@@ -19,7 +19,6 @@ class CreateFormsTable extends Migration
             $table->string('email');
             $table->string('phone');
             $table->text('message')->nullable();
-            $table->uuid('upload_file_uuid')->nullable();
             $table->timestamps();
         });
     }

@@ -68,7 +68,14 @@
                         <span class="inline-block w-1/3 md:hidden font-bold">
                             Mobile</span>{{ $form->message }}</td>
                     <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                        <span class="">{{ $files = \Illuminate\Support\Facades\DB::table('upload_files')->where('uuid', $form->upload_file_uuid)->select('file_path')->get() }}</span>
+{{--                        <!-- <img src="{{ asset('storage') . '/' . $file->file_path }}" width="50" height="50"> -->--}}
+                        @php
+                            $files = $form->file;
+                            foreach ($files as $file) {
+                                echo $file->file_path;
+                                echo '<br />';
+                            }
+                        @endphp
                     </td>
     {{--                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">--}}
     {{--                    <span class="inline-block w-1/3 md:hidden font-bold">Actions</span>--}}

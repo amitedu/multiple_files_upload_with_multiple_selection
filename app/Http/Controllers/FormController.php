@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FormStoreRequest;
+use App\Models\File;
 use App\Models\Form;
 use App\Models\UploadFile;
 use Illuminate\Http\Request;
@@ -12,7 +13,9 @@ class FormController extends Controller
 {
     public function index()
     {
-        return view('form.index', ['forms' => Form::all()]);
+        $forms = Form::with('file')->get();
+//        dd($forms);
+        return view('form.index', ['forms' => $forms]);
     }
 
     public function create()
@@ -24,12 +27,14 @@ class FormController extends Controller
     {
         $attributes = $formStoreRequest->all();
 
-        $upload_files['uuid'] = null;
+
+
+//        $upload_files['uuid'] = null;
         $filesize = 0;
 
         if ($files = $formStoreRequest->upload_files) {
 //            $attributes['upload_files'] = $formStoreRequest->upload_files->store('uploads');
-            $upload_files['uuid'] = Str::uuid();
+//            $upload_files['uuid'] = Str::uuid();
 
             foreach ($files as $file) {
                 $filesize += filesize($file);
@@ -39,22 +44,32 @@ class FormController extends Controller
                 return redirect()->back()->withErrors(['upload_files', 'The uploaded file exceeds the allowed size']);
             }
 
+            $form = Form::create([
+                'name' => $attributes['name'],
+                'email' => $attributes['email'],
+                'phone' => $attributes['phone'],
+                'message' => $attributes['message'],
+            ]);
+
+            $upload_files['form_id'] = $form->id;
+
             foreach ($files as $file) {
 //                $upload_files['file_path'] = $formStoreRequest->upload_files->store('uploads');
                 $upload_files['file_path'] = $file->store('uploads');
 
-                UploadFile::create($upload_files);
+                File::create($upload_files);
             }
+        } else {
+//            dd('hi');
+            Form::create([
+                'name' => $attributes['name'],
+                'email' => $attributes['email'],
+                'phone' => $attributes['phone'],
+                'message' => $attributes['message'],
+            ]);
         }
 
-        Form::create([
-            'name' => $attributes['name'],
-            'email' => $attributes['email'],
-            'phone' => $attributes['phone'],
-            'message' => $attributes['message'],
-            'upload_file_uuid' => $upload_files['uuid']
-        ]);
-
+        dd('at_last');
         return view('form.index', ['forms' => Form::all()]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Form extends Model
 {
@@ -11,8 +12,8 @@ class Form extends Model
 
     protected $guarded = [];
 
-//    public function upload_files()
-//    {
-//        return $this->hasMany(UploadFile::class, 'upload_file_uuid', 'uuid');
-//    }
+    public function file(): HasMany
+    {
+        return $this->hasMany(File::class);
+    }
 }
