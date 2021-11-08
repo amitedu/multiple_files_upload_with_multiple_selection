@@ -3,8 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Laravel</title>
+
+    <style type="text/css">
+        .image_container {
+            height: 60px;
+            width: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px;
+        }
+        .image_container img {
+            height: 100%;
+            width: auto;
+            object-fit: cover;
+        }
+        .image_container span {
+            top: -8px;
+            right: 2px;
+            color: red;
+            font-size: 20px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+    </style>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -20,6 +44,7 @@
             font-family: 'Nunito', sans-serif;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body class="antialiased">
 <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
@@ -43,61 +68,268 @@
             <div class="bg-white rounded shadow-2xl p-8 m-4">
                 <h1 class="block w-full text-center text-gray-800 text-2xl font-bold mb-6">Form</h1>
 
-                <form action="{{ route('form.store') }}" method="post" enctype="multipart/form-data">
+{{--                <form action="{{ route('form.store') }}" method="post" enctype="multipart/form-data" id="form">--}}
+                <form action="{{ route('form.store') }}" method="post" enctype="multipart/form-data" id="upload_form">
                     @csrf
 
                     <div class="flex flex-col mb-4">
                         <label class="mb-2 font-bold text-lg text-gray-900" for="first_name">Name</label>
-                        <input class="border py-2 px-3 text-grey-800" type="text" name="name" id="first_name">
-                        @error('name')
-                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                        @enderror
+                        <input class="border py-2 px-3 text-grey-800" type="text" name="name" id="name" value="{{ old('name') }}">
+{{--                        @error('name')--}}
+                        <p class="text-red-500 text-xs mt-2"
+                           id="name_error"
+                        ></p>
+{{--                        @enderror--}}
                     </div>
 
                     <div class="flex flex-col mb-4">
-                        <label class="mb-2 font-bold text-lg text-gray-900" for="phone">Phone</label>
-                        <input class="border py-2 px-3 text-grey-800" type="tel" name="phone" id="phone">
-                        @error('phone')
-                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                        @enderror
+                        <label class="mb-2 font-bold text-lg text-gray-900" for="phone">Number</label>
+                        <input class="border py-2 px-3 text-grey-800" type="tel" name="phone" id="phone" value="{{ old('phone') }}">
+                        <p class="text-red-500 text-xs mt-2" id="phone_error"></p>
                     </div>
 
                     <div class="flex flex-col mb-4">
                         <label class="mb-2 font-bold text-lg text-gray-900" for="email">Email</label>
-                        <input class="border py-2 px-3 text-grey-800" type="email" name="email" id="email">
-                        @error('email')
-                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                        @enderror
+                        <input class="border py-2 px-3 text-grey-800" type="email" name="email" id="email" value="{{ old('email') }}">
+                        <p class="text-red-500 text-xs mt-2" id="email_error"></p>
                     </div>
 
                     <div class="flex flex-col mb-4">
                         <label class="mb-2 font-bold text-lg text-gray-900" for="textarea">Message</label>
-                        <textarea class="border py-2 px-3 text-grey-800" rows="3" name="message" id="textarea"></textarea>
-                        @error('message')
-                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                        @enderror
+                        <textarea class="border text-grey-800 text-left" rows="3" name="message" id="message" >
+                            {{ old('message') }}
+                        </textarea>
+                        <p class="text-red-500 text-xs mt-2" id="message_error"></p>
                     </div>
 
                     <div class="flex flex-col mb-4">
                         <label class="mb-2 font-bold text-lg text-gray-900" for="File">File</label>
-                        <input class="border py-2 px-3 text-grey-800" type="file" name="upload_files[]" multiple id="file">
-                        @error('upload_files')
-                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-                        @enderror
+                        <input class="border py-2 px-3 text-grey-800"
+                               type="file"
+                               name="upload_files[]"
+                               multiple=""
+                               id="image"
+                               onchange="image_select()">
+                        <p class="text-red-500 text-xs mt-2" id="upload_files_error"></p>
                     </div>
 
-                    <button
-                        class="block bg-green-400 hover:bg-green-600 text-white uppercase text-lg mx-auto px-4 py-2 rounded"
-                        type="submit"
-                    >
-                        Create
-                    </button>
+{{--                    <div class="card-body d-flex flex-wrap justify-content-start" id="container">--}}
+{{--                        <!-- Image will be show here-->--}}
+{{--                    </div>--}}
+
+                    <!-- This is tailwind version -->
+                    <div class="flex-auto flex flex-wrap justify-start" id="container">
+                        <!-- Image will be show here-->
+                    </div>
+
+                    <!-- Captcha -->
+                    <div class="flex flex-col mb-4">
+                        <div class="captcha flex ">
+                            <span id="showCaptcha">{!! captcha_img() !!}</span>
+                            <button type="button"
+                                    class="block bg-green-400 hover:bg-green-600 text-white uppercase text-lg mx-auto px-2 py-1 rounded refresh-captcha"
+                                    id="refresh-captcha">
+                                &#x21bb;
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col mb-4">
+                        <input id="captcha" required type="text" class="border py-2 px-3 text-grey-800" placeholder="Enter Captcha" name="captcha">
+                        <p class="text-red-500 text-xs mt-2" id="captcha_error"></p>
+                    </div>
+                    <!-- End Captcha -->
+
+                    <div class="flex mb-4 mt-12">
+                        <a href="{{ route('form.index') }}"
+                           class="block text-gray-500 uppercase text-lg mx-auto px-4 py-2 rounded"
+                        >Cancel</a>
+                        <button
+                            class="block bg-green-400 hover:bg-green-600 text-white uppercase text-lg mx-auto px-4 py-2 rounded"
+                            id="submit"
+                            type="submit"
+                        >
+                            Create
+                        </button>
+                    </div>
                 </form>
 
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // this variable will store images for preview
+    let images = [];
+
+    // this function will select images
+    function image_select() {
+        let image = document.getElementById('image').files;
+        for (let i = 0; i < image.length; i++) {
+            if (check_duplicate(image[i].name)) {
+                images.push({
+                    "name" : image[i].name,
+                    "url" : URL.createObjectURL(image[i]),
+                    "file" : image[i],
+                })
+            } else
+            {
+                alert(image[i].name + " is already added to the list");
+            }
+            console.log(images);
+        }
+
+        // document.getElementById('form').reset();
+        document.getElementById('container').innerHTML = image_show();
+    }
+
+    // this function will show images in the DOM
+    function image_show() {
+        let image = "";
+        images.forEach((i) => {
+            image += `<div class="image_container flex justify-center relative">
+   	  	  	  	  <img src="`+ i.url +`" alt="Image">
+   	  	  	  	  <span class="absolute" onclick="delete_image(`+ images.indexOf(i) +`)">&times;</span>
+   	  	  	  </div>`;
+        })
+        return image;
+    }
+
+    // this function will get all images from the array
+    function get_image_data() {
+        let formData = new FormData();
+
+        formData.append("_token", "{{ csrf_token() }}");
+        formData.append('name', document.getElementById('name').value);
+        formData.append('phone', document.getElementById('phone').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('message', document.getElementById('message').value);
+        formData.append('captcha', document.getElementById('captcha').value);
+        for (let index = 0; index < images.length; index++) {
+            formData.append("upload_files[" + index + "]", images[index]['file']);
+        }
+
+        return formData;
+    }
+
+    // this function will delete a specific image from the container
+    function delete_image(e) {
+        images.splice(e, 1);
+        document.getElementById('container').innerHTML = image_show();
+    }
+
+    // this function will check duplicate images
+    function check_duplicate(name) {
+        let image = true;
+        if (images.length > 0) {
+            for (let e = 0; e < images.length; e++) {
+                if (images[e].name == name) {
+                    image = false;
+                    break;
+                }
+            }
+        }
+        return image;
+    }
+
+
+    // $('#refresh-captcha').click(function () {
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: 'refresh-captcha',
+    //         success: function (data) {
+    //             $(".captcha span").html(data.captcha);
+    //         }
+    //     });
+    // });
+
+    document.querySelector("#refresh-captcha").addEventListener("click", function (e) {
+        e.preventDefault();
+
+        fetch('refresh-captcha', {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(json => document.querySelector("#showCaptcha").innerHTML = json.captcha);
+        // .then(err => console.log(err));
+    });
+
+
+    {{--document.querySelector("#refresh-captcha").addEventListener("click", function (e) {--}}
+    {{--    e.preventDefault();--}}
+
+    {{--    fetch('{{ route('form.store') }}', {--}}
+    {{--        method: 'POST',--}}
+    {{--        headers: { 'Content-Type': 'multipart/form-data' },--}}
+    {{--        body: get_image_data()--}}
+    {{--    })--}}
+    {{--    .then(response => response.json())--}}
+    {{--    .then(json => {--}}
+    {{--        this.reset();--}}
+    {{--        location.reload();--}}
+    {{--    })--}}
+    {{--    .then(data => {--}}
+    {{--        // Refresh Captcha--}}
+    {{--        document.querySelector("#refresh-captcha").addEventListener("click", function (e) {--}}
+    {{--            e.preventDefault();--}}
+
+    {{--            fetch('refresh-captcha', {--}}
+    {{--                method: 'GET',--}}
+    {{--            })--}}
+    {{--                .then(response => response.json())--}}
+    {{--                .then(json => document.querySelector("#showCaptcha").innerHTML = json.captcha);--}}
+    {{--            // .then(err => console.log(err));--}}
+    {{--        });--}}
+
+    {{--        // Remove all error messages--}}
+    {{--        const errorMessages = document.querySelectorAll('.text-red-500');--}}
+    {{--        errorMessages.forEach((element) => element.textContent = '');--}}
+
+    {{--        $.each(data.responseJSON.errors, function (key, value) {--}}
+    {{--            $('#' + key + '_error').text(data.responseJSON.errors[key]);--}}
+    {{--        });--}}
+    {{--    })--}}
+    {{--});--}}
+
+
+    $('#upload_form').submit(function (e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            type: 'POST',
+            url: '{{ route('form.store') }}',
+            data: get_image_data(),
+            contentType: false,
+            processData: false,
+            success: (response) => {
+                if (response) {
+                    this.reset();
+                    location.reload();
+                }
+            },
+            error: (data) => {
+                // Refresh Captcha
+                    fetch('refresh-captcha', {
+                        method: 'GET',
+                    })
+                        .then(response => response.json())
+                        .then(json => document.querySelector("#showCaptcha").innerHTML = json.captcha);
+                    // .then(err => console.log(err));
+
+                // Remove all error messages
+                const errorMessages = document.querySelectorAll('.text-red-500');
+                errorMessages.forEach((element) => element.textContent = '');
+
+                $.each(data.responseJSON.errors, function (key, value) {
+                    $('#' + key + '_error').text(data.responseJSON.errors[key]);
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>
 

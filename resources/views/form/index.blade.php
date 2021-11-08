@@ -41,51 +41,63 @@
         <a href="{{ route('form.create') }}"
            class="bg-green-500 px-4 py-2 text-white rounded mb-2"
         >Create</a>
-        <!-- component -->
-        <table class="min-w-full border-collapse block md:table">
-            <thead class="block md:table-header-group">
-            <tr class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto  md:relative ">
-                <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Name</th>
-                <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Mobile</th>
-                <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Email</th>
-                <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Message</th>
-                <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Files</th>
-            </tr>
-            </thead>
-            <tbody class="block md:table-row-group">
-            @foreach($forms as $form)
-                <tr class="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
-                    <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+
+{{--        @if(empty($forms))--}}
+            <!-- component -->
+            <table class="min-w-full border-collapse block md:table">
+                <thead class="block md:table-header-group">
+                <tr class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto  md:relative ">
+                    <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Name</th>
+                    <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Mobile</th>
+                    <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Email</th>
+                    <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Message</th>
+                    <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">Files</th>
+                </tr>
+                </thead>
+                <tbody class="block md:table-row-group">
+                @foreach($forms as $form)
+                    <tr class="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
+                        <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                         <span class="inline-block w-1/3 md:hidden font-bold">
                             Name</span>{{ $form->name }}</td>
-                    <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                        <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                         <span class="inline-block w-1/3 md:hidden font-bold">
                             User Name</span>{{ $form->phone }}</td>
-                    <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                        <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                         <span class="inline-block w-1/3 md:hidden font-bold">
                             Email Address</span>{{ $form->email }}</td>
-                    <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                        <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                         <span class="inline-block w-1/3 md:hidden font-bold">
                             Mobile</span>{{ $form->message }}</td>
-                    <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                        <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                            <!-- For Windows -->
 {{--                        <!-- <img src="{{ asset('storage') . '/' . $file->file_path }}" width="50" height="50"> -->--}}
-                        @php
-                            $files = $form->file;
-                            foreach ($files as $file) {
-                                echo $file->file_path;
-                                echo '<br />';
-                            }
-                        @endphp
-                    </td>
-    {{--                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">--}}
-    {{--                    <span class="inline-block w-1/3 md:hidden font-bold">Actions</span>--}}
-    {{--                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-500 rounded">Edit</button>--}}
-    {{--                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded">Delete</button>--}}
-    {{--                </td>--}}
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+
+                            <!-- For Linux -->
+{{--                        <!-- <img src="{{ url('') . '/' . $file->file_path }}" width="50" height="50"> -->--}}
+
+                            @php
+                                $files = $form->file;
+                                foreach ($files as $file) {
+                            @endphp
+                            <img src="{{ url('') . '/' . $file->file_path }}" width="50" height="50" alt="uploaded file">
+                            <br />
+                            @php
+                                }
+                            @endphp
+                        </td>
+                        {{--                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">--}}
+                        {{--                    <span class="inline-block w-1/3 md:hidden font-bold">Actions</span>--}}
+                        {{--                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-500 rounded">Edit</button>--}}
+                        {{--                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded">Delete</button>--}}
+                        {{--                </td>--}}
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+{{--            @else--}}
+{{--            <p class="text-gray-600 mt-4 text-lg">No record found.</p>--}}
+{{--        @endif--}}
     </div>
 </div>
 </body>

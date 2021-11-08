@@ -18,8 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/create', [FormController::class, 'create'])->name('form.create');
-//Route::get('/index', [FormController::class, 'index'])->name('form.index');
-//Route::post('/store', [FormController::class, 'store'])->name('form.store');
-
+Route::get('/form/refresh-captcha', [FormController::class, 'refreshCaptcha']);
 Route::resource('/form', FormController::class);

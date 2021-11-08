@@ -21,7 +21,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+        <div class="relative flex items-top justify-center min-h-screen sm:items-center py-4 sm:pt-0">
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
@@ -38,7 +38,7 @@
 
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <a href="{{ route('form.create') }}" class="bg-green-500 px-4 py-2 rounded text-white">Create</a>
-                <a href="{{ route('form.index') }}" class="bg-green-500 px-4 py-2 rounded text-white">Show</a>
+                <a href="{{ route('form.index') }}" class="bg-green-500 px-4 py-2 rounded text-white ml-4">Show</a>
             </div>
         </div>
     </body>

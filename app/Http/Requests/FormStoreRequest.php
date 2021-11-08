@@ -25,10 +25,10 @@ class FormStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
+            'phone' => ['required', 'string', 'max:10'],
+            'email' => ['required', 'string', 'email', 'unique:forms'],
             'message' => ['string'],
-//            'upload_files' => ['files'],
+            'captcha' => ['required', 'captcha'],
         ];
     }
 }
